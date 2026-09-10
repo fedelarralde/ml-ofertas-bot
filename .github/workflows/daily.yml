@@ -1,9 +1,8 @@
-
 name: Bot de ofertas diario
 
 on:
   schedule:
-      - cron: "0 * * * *"
+    - cron: "0 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -30,11 +29,18 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_BUSINESS_ID: ${{ secrets.IG_BUSINESS_ID }}
+          ML_CLIENT_ID: ${{ secrets.ML_CLIENT_ID }}
+          ML_CLIENT_SECRET: ${{ secrets.ML_CLIENT_SECRET }}
+          ML_REFRESH_TOKEN: ${{ secrets.ML_REFRESH_TOKEN }}
         run: python main.py
 
       - name: Guardar historico actualizado
         run: |
           git config user.name "bot-ofertas"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/precios.json
+          git diff --cached --quiet || git commit -m "Actualiza historico de precios [skip ci]"
+          git push
           git config user.email "bot@users.noreply.github.com"
           git add data/precios.json
           git diff --cached --quiet || git commit -m "Actualiza historico de precios [skip ci]"
