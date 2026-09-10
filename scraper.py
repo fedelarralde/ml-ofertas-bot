@@ -16,16 +16,21 @@ SITE_ID = "MLA"
 BASE_URL = f"https://api.mercadolibre.com/sites/{SITE_ID}/search"
 
 
-def buscar_productos(keyword: str, limite: int = 20) -> list[dict]:
+def buscar_productos(keyword: str, access_token: str, limite: int = 20) -> list[dict]:
     """
     Busca productos por keyword y devuelve una lista de dicts normalizados.
+    Requiere un access_token valido (ver auth_mercadolibre.py), porque desde
+    abril de 2025 MercadoLibre exige autenticacion para este endpoint.
     """
     params = {
         "q": keyword,
         "limit": limite,
     }
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+    }
 
-    resp = requests.get(BASE_URL, params=params, timeout=15)
+    resp = requests.get(BASE_URL, params=params, headers=headers, timeout=15)
     resp.raise_for_status()
     data = resp.json()
 
@@ -49,7 +54,7 @@ def buscar_productos(keyword: str, limite: int = 20) -> list[dict]:
     return productos
 
 
-def buscar_multiples(keywords: list[str], limite_por_keyword: int = 20) -> list[dict]:
+def buscar_multiples(keywords: list[str], access_token: str, limite_por_keyword: int = 20) -> list[dict]:
     """
     Recorre una lista de keywords y junta todos los resultados.
     Espera 1 segundo entre requests para no saturar la API.
@@ -57,7 +62,7 @@ def buscar_multiples(keywords: list[str], limite_por_keyword: int = 20) -> list[
     todos = []
     for kw in keywords:
         try:
-            todos.extend(buscar_productos(kw, limite_por_keyword))
+            todos.extend(buscar_productos(kw, access_token, limite_por_keyword))
         except requests.RequestException as e:
             print(f"[WARN] Error buscando '{kw}': {e}")
         time.sleep(1)
@@ -65,6 +70,12 @@ def buscar_multiples(keywords: list[str], limite_por_keyword: int = 20) -> list[
 
 
 if __name__ == "__main__":
+    # Prueba rapida (necesita ML_CLIENT_ID, ML_CLIENT_SECRET, ML_REFRESH_TOKEN en el entorno)
+    from auth_mercadolibre import obtener_access_token
+    token = obtener_access_token()
+    resultados = buscar_productos("notebook gamer", token, limite=5)
+    for p in resultados:
+        print(p["titulo"], "-", p["precio_actual"], p["moneda"])
     # Prueba rapida
     resultados = buscar_productos("notebook gamer", limite=5)
     for p in resultados:
