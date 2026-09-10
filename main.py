@@ -1,34 +1,27 @@
 """
 main.py
 Orquesta el flujo diario completo:
-1. Busca productos en MercadoLibre segun las KEYWORDS configuradas
+1. Consulta en MercadoLibre los productos definidos en productos.py
 2. Compara contra el historico y detecta bajas de precio reales
 3. Manda TODAS las ofertas detectadas al canal de Telegram
 4. Publica en Instagram solo la MEJOR oferta del dia (para no floodear el feed)
 
-Se ejecuta una vez al dia via GitHub Actions (ver .github/workflows/daily.yml)
+Se ejecuta periodicamente via GitHub Actions (ver .github/workflows/daily.yml)
 """
 
-from scraper import buscar_multiples
+from scraper import buscar_por_ids
 from comparador import detectar_bajas
 from notificador_telegram import enviar_ofertas
 from auth_mercadolibre import obtener_access_token
-
-# --- Configuracion: cambia esto por las categorias/productos que te interesen ---
-KEYWORDS = [
-    "notebook gamer",
-    "smart tv 50 pulgadas",
-    "auriculares bluetooth",
-    "zapatillas running",
-]
+from productos import PRODUCTOS_A_TRACKEAR
 
 
 def main():
     print("Autenticando con MercadoLibre...")
     access_token = obtener_access_token()
 
-    print(f"Buscando productos para: {KEYWORDS}")
-    productos = buscar_multiples(KEYWORDS, access_token, limite_por_keyword=20)
+    print(f"Consultando {len(PRODUCTOS_A_TRACKEAR)} productos...")
+    productos = buscar_por_ids(PRODUCTOS_A_TRACKEAR, access_token)
     print(f"Se encontraron {len(productos)} productos en total")
 
     ofertas = detectar_bajas(productos)
