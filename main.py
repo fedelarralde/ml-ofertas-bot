@@ -12,6 +12,7 @@ Se ejecuta una vez al dia via GitHub Actions (ver .github/workflows/daily.yml)
 from scraper import buscar_multiples
 from comparador import detectar_bajas
 from notificador_telegram import enviar_ofertas
+from auth_mercadolibre import obtener_access_token
 
 # --- Configuracion: cambia esto por las categorias/productos que te interesen ---
 KEYWORDS = [
@@ -23,8 +24,11 @@ KEYWORDS = [
 
 
 def main():
+    print("Autenticando con MercadoLibre...")
+    access_token = obtener_access_token()
+
     print(f"Buscando productos para: {KEYWORDS}")
-    productos = buscar_multiples(KEYWORDS, limite_por_keyword=20)
+    productos = buscar_multiples(KEYWORDS, access_token, limite_por_keyword=20)
     print(f"Se encontraron {len(productos)} productos en total")
 
     ofertas = detectar_bajas(productos)
@@ -44,6 +48,10 @@ def main():
     # mejor_oferta = ofertas[0]
     # media_id = publicar_oferta(mejor_oferta)
     # print(f"Publicado en Instagram: {media_id}")
+
+
+if __name__ == "__main__":
+    main()
 
 
 if __name__ == "__main__":
