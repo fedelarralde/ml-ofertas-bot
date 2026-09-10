@@ -65,6 +65,8 @@ def buscar_multiples(keywords: list[str], access_token: str, limite_por_keyword:
             todos.extend(buscar_productos(kw, access_token, limite_por_keyword))
         except requests.RequestException as e:
             print(f"[WARN] Error buscando '{kw}': {e}")
+            if e.response is not None:
+                print(f"[WARN] Detalle de la respuesta: {e.response.text}")
         time.sleep(1)
     return todos
 
@@ -74,9 +76,5 @@ if __name__ == "__main__":
     from auth_mercadolibre import obtener_access_token
     token = obtener_access_token()
     resultados = buscar_productos("notebook gamer", token, limite=5)
-    for p in resultados:
-        print(p["titulo"], "-", p["precio_actual"], p["moneda"])
-    # Prueba rapida
-    resultados = buscar_productos("notebook gamer", limite=5)
     for p in resultados:
         print(p["titulo"], "-", p["precio_actual"], p["moneda"])
