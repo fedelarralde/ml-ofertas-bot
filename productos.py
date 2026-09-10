@@ -22,6 +22,7 @@ PRODUCTOS_A_TRACKEAR = [
     "MLA40164574",   # Notebook Lenovo Ideapad 1 15.6 i5
     "MLA928853579",  # Soporte para notebook gamer RGB
     "MLA1119125231", # Notebook HP 15 Gamer Ryzen 5
+    "MLA47671534",   # Producto de prueba (activo, confirmado)
     # Agrega tus propios productos aca abajo, uno por linea:
     # "MLAxxxxxxxxx",
 ]
