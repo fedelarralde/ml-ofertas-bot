@@ -89,6 +89,7 @@ def buscar_por_ids(ids: list[str], access_token: str) -> list[dict]:
         for entry in resultados:
             if entry.get("code") != 200:
                 print(f"[WARN] No se pudo obtener {entry.get('body', {}).get('id')}: {entry.get('code')}")
+                print(f"[WARN] Detalle completo: {entry}")
                 continue
 
             item = entry["body"]
@@ -110,7 +111,3 @@ def buscar_por_ids(ids: list[str], access_token: str) -> list[dict]:
         time.sleep(1)
 
     return productos
-    token = obtener_access_token()
-    resultados = buscar_productos("notebook gamer", token, limite=5)
-    for p in resultados:
-        print(p["titulo"], "-", p["precio_actual"], p["moneda"])
